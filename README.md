@@ -39,7 +39,7 @@ comp(() => {
   // runs when firstName changes
   console.log(firstName());
   comp(() => {
-    // runs when lastName changes
+    // runs when lastName or firstName changes
     console.log(lastName())
   })
 })
@@ -81,7 +81,7 @@ npm install --save atlas-munchlax
 
 Munchlax exports `val` and `comp`, which are helpers for using the reactive variable/autorun pattern we saw in frameworks like Meteor and MobX. All it takes is a few lines of code to build your own pattern. Let's implement `observer` from MobX:
 
-```javascript
+```jsx
 const obs = render => {
   return (t, f, d) => {
     f.deps = f.deps || [], par = f;
