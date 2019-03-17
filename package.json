@@ -6,7 +6,7 @@
     "test-server": "mocha --colors --watch --recursive './test/**/*.test.js'",
     "test": "mocha --colors --recursive './test/**/*.test.js'"
   },
-  "main": "./src/index.js",
+  "main": "./src/munchlax.js",
   "keywords": [
     "atlassubbed",
     "relax",
@@ -30,12 +30,10 @@
   "peerDependencies": {
     "atlas-relax": "^1.0.1"
   },
-  "os": [
-    "darwin",
-    "linux"
-  ],
-  "engines": {
-    "node": "^10.1.0",
-    "npm": "^6.0.1"
+  "homepage": "https://github.com/atlassubbed/atlas-munchlax#readme",
+  "bugs": "https://github.com/atlassubbed/atlas-munchlax/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atlassubbed/atlas-munchlax.git"
   }
 }
