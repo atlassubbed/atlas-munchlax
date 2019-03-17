@@ -53,7 +53,7 @@ Everything in Munchlax is either a **reactive variable** or a **reactive computa
 ### getting/setting reactive variables in other frameworks
 
   1. **Meteor**: Meteor has a very explicit syntax for getting/setting reactive variables. First, you create the variable with `const name = new ReactiveVar("atlas")`, then you can get it with `name.get()` and set it with `name.set("jai")`. This is a bit verbose.
-  2. **MobX**: MobX is on the other end of the spectrum. You initialize instance values with `@observable name = "atlas"`, then you can get them by calling `this.name` and set them with `this.name = "jai"`. This is too implicit and obfuscates intent.
+  2. **MobX**: MobX is on the other end of the spectrum. You initialize instance values with `@observable name = "atlas"`, then you can get them by calling `this.name` and set them with `this.name = "jai"`. This is too implicit and obfuscates reactivity intent.
   3. **S**: S introduced an API that is half-way between the above two. To create values, you use `const name = S.data("atlas")`, to get them you do `name()` and to set them, you send the variable a new value with `name("jai")`.
 
 Munchlax keeps things explicit and terse by using S's syntax.
