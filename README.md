@@ -4,7 +4,7 @@ Reactive variable and autorun library in 20 lines of code -- inspired by Meteor.
 
 [![Travis](https://img.shields.io/travis/atlassubbed/atlas-munchlax.svg)](https://travis-ci.org/atlassubbed/atlas-munchlax)
 
----
+[<img alt="Munchlax being awesome" align="right" width="200" src="https://user-images.githubusercontent.com/38592371/54497007-f192c700-48cb-11e9-99c9-f040209c362d.png">](https://pokemondb.net/pokedex/munchlax?q=use-atlas-relax)
 
 Munchlax gives you reactive variables, computed variables and autoruns:
 
@@ -109,3 +109,7 @@ That was easy, because Relax is doing all of the actual work -- we didn't have t
 Homework: How is this different than `comp`?
 
 <sup>Hint: It's not all that different. The VDOM in Relax isn't a V*DOM*. `comp`s return a list of computations and each `comp` in the list is a child in a `comp` tree (not a DOM!). What children are we returning in `obs`?</sup>
+
+#### credits
+
+[GhostyDoesStuff](https://aminoapps.com/c/pokemon/page/user/ghostydoesstuff-tm/jlhp_fgmM8N1gMK1GebwPGp153oRKr) made the "Munchlax in Sunglasses" image.
