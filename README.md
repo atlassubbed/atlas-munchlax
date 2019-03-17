@@ -1,6 +1,6 @@
 # atlas-munchlax
 
-Reactive variable and autorun library inspired by Meteor.
+Reactive variable and autorun library in 20 lines of code -- inspired by Meteor.
 
 [![Travis](https://img.shields.io/travis/atlassubbed/atlas-munchlax.svg)](https://travis-ci.org/atlassubbed/atlas-munchlax)
 
@@ -46,6 +46,8 @@ comp(() => {
 
 ```
 
+> If you read the source code, you might notice that this library is (relatively) trivial compared to MobX or Meteor.Tracker. That's because [Relax](https://github.com/atlassubbed/atlas-relax) is doing *all* of the heavy lifting -- we've reduced the task of state management to [*picking a pattern*](#another-pattern) we'd like to use! All of these patterns can be implemented on top of Relax's lego-like primitives. The key here is that the same engine for VDOM/graph diffing and reconcilation can easily power both UI frameworks and state management frameworks.
+
 ### concepts
 
 Everything in Munchlax is either a **reactive variable** or a **reactive computation** (an "observed" function). If a reactive computation returns a value, then that value is a "derived" value, and can be depended on by other reactive computations as if it were a reactive variable. Reactive computations are just functions which track (i.e. "observe") the values they depend on. If an underlying value changes, the computation is rerun efficiently and atomically.
@@ -75,21 +77,35 @@ npm install --save atlas-relax # peer dependency
 npm install --save atlas-munchlax
 ```
 
-### todo
+### another pattern!
 
-Basically `observer` from MobX, but powered by the view framework itself, instead of an entire additional reactive codebase:
+Munchlax exports `val` and `comp`, which are helpers for using the reactive variable/autorun pattern we saw in frameworks like Meteor and MobX. All it takes is a few lines of code to build your own pattern. Let's implement `observer` from MobX:
 
 ```javascript
 const obs = render => {
   return (t, f, d) => {
-    f.deps = f.deps || [], compStack.push(f);
+    f.deps = f.deps || [], par = f;
     while(d = f.deps.pop()) f.unsub(d);
-    compStack.pop(t = render(t, f));
+    par = void(t = render(t, f));
     return t;
   }
 }
+
+// use
+// global reactive state variable ("sideways" data)
+const isDarkMode = val(false)
+// every instance is automatically reactive
+const MyComponent = obs(() => {
+  return (
+    <div>
+      We're currently in {isDarkMode() ? "night" : "day"} mode
+    </div>
+  )
+})
 ```
+
+That was easy, because Relax is doing all of the actual work -- we didn't have to implement any kind of precise update propagation logic because Relax takes care of it all. Instead of importing an entire reactive framework like MobX, we get all the real power of MobX with a single helper function.
 
 Homework: How is this different than `comp`?
 
-<sup>Hint: It's not all that different. The VDOM in Relax isn't a V*DOM*. `comp`s return `f.comps` and each `comp` is a child in a `comp` tree (not a DOM!). What children are we returning in `obs`?</sup>
+<sup>Hint: It's not all that different. The VDOM in Relax isn't a V*DOM*. `comp`s return a list of computations and each `comp` in the list is a child in a `comp` tree (not a DOM!). What children are we returning in `obs`?</sup>
