@@ -34,4 +34,12 @@ const comp = (render, cur, self) => {
   return () => (track(self), cur);
 }
 
-module.exports = { val, comp };
+// reactive observer (essentially turns render into a reactive comp)
+const obs = render => (t, f, d) => {
+  f.deps = f.deps || [], par = f;
+  while(d = f.deps.pop()) f.unsub(d);
+  par = void(t = render(t, f));
+  return t;
+}
+
+module.exports = { val, comp, obs };
