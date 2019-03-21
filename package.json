@@ -1,6 +1,6 @@
 {
   "name": "atlas-munchlax",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Reactive variable and autorun library inspired by Meteor.",
   "scripts": {
     "test-server": "mocha --colors --watch --recursive './test/**/*.test.js'",
