@@ -216,6 +216,16 @@ describe("reactivity", function(){
     })
   })
   describe("reactive (observed) render functions", function(){
+    it("should use a custom name if supplied with an arrow function", function(){
+      const MyApp = () => {};
+      const decoratedRender = obs(MyApp, "CustomName");
+      expect(decoratedRender.name).to.equal("CustomName");
+    })
+    it("should use a custom name if supplied with a function", function(){
+      function MyApp(){};
+      const decoratedRender = obs(MyApp, "CustomName");
+      expect(decoratedRender.name).to.equal("CustomName");
+    })
     it("should inherit the name of the passed arrow function", function(){
       const MyApp = () => {};
       const decoratedRender = obs(MyApp);
@@ -225,6 +235,16 @@ describe("reactivity", function(){
       function MyApp(){};
       const decoratedRender = obs(MyApp);
       expect(decoratedRender.name).to.equal("MyApp");
+    })
+    it("should use the name 'obs' if the passed arrow function is anonymous", function(){
+      const makeAnonRender = () => () => {};
+      const decoratedRender = obs(makeAnonRender());
+      expect(decoratedRender.name).to.equal("obs");
+    })
+    it("should use the name 'obs' if the passed function is anonymous", function(){
+      const makeAnonRender = () => function(){};
+      const decoratedRender = obs(makeAnonRender());
+      expect(decoratedRender.name).to.equal("obs");
     })
     it("should run render with no return value", function(){
       let called = 0;
