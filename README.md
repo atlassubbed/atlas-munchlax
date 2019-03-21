@@ -46,6 +46,7 @@ comp(() => {
 
 // reactively "observe" render functions (like in Mobx)
 // shares all the same properties as reactive computations
+//   * can nest comps and children can be observed, too
 //   * scoped reactivity, no redundant renders, etc.
 const App = obs(() => {
   // automatically rerenders when firstName is set
@@ -66,7 +67,7 @@ Everything in Munchlax is either a **reactive variable** or a **reactive computa
 ### getting/setting reactive variables in other frameworks
 
   1. **Meteor**: Meteor has a very explicit syntax for getting/setting reactive variables. First, you create the variable with `const name = new ReactiveVar("atlas")`, then you can get it with `name.get()` and set it with `name.set("jai")`. This is a bit verbose.
-  2. **MobX**: MobX is on the other end of the spectrum. You initialize instance values with `@observable name = "atlas"`, then you can get them by calling `this.name` and set them with `this.name = "jai"`. This is too implicit and obfuscates reactivity intent.
+  2. **MobX**: MobX is on the other end of the spectrum. You initialize instance values with `@observable name = "atlas"`, then you can get them by calling `this.name` and set them with `this.name = "jai"`. This is too implicit and obfuscates reactivity intent -- there are too many gotchyas for beginners.
   3. **S**: S introduced an API that is half-way between the above two. To create values, you use `const name = S.data("atlas")`, to get them you do `name()` and to set them, you send the variable a new value with `name("jai")`.
 
 Munchlax keeps things explicit and terse by using S's syntax.
@@ -92,9 +93,9 @@ npm install --save atlas-munchlax
 
 A `comp` is like MobX's `autorun` and `@computed` APIs in one function. It is similar to Meteor's `Tracker.autorun` as well.
 
-`obs` is basically the same as `comp`, except it lets you "wrap" render functions and automatically turn them into reactive autoruns. The `obs` implementation is 4 lines of code. It's so short because it's an API wrapper for something you can already do with Relax. 
+`obs` is basically the same as `comp`, except it lets you "wrap" render functions and automatically turn them into reactive autoruns. The `obs` implementation is 6 lines of code. It's so short because it's an API wrapper for something you can already do with Relax. 
 
-Relax is a state management library, but it is not opinionated. It provides the necessary primitives for you to form your own opinion. *Munchlax* is merely an opinion, and it's for the people who love Meteor or MobX. If you aren't one of those people, don't worry -- Relax makes it easy for you to use a different opinion. Hopefully you will feel more at home with `val`, `comp`, and `obs` if you enjoyed Meteor and MobX:
+Relax is a state management library, but it is not opinionated. It provides the necessary primitives for you to form your own opinion. *Munchlax* is merely an opinion, and it's for the people who love Meteor and MobX. If you aren't one of those people, don't worry -- Relax makes it easy for you to use a different opinion. Hopefully you will feel at home with `val`, `comp`, and `obs`:
 
 ```jsx
 import { val, obs } from "atlas-munchlax";
@@ -118,7 +119,7 @@ const MyDashboard = obs(() => {
 })
 ```
 
-Instead of importing an entire reactive framework like MobX, we get most of the power of MobX with a 4 line helper function.
+Instead of importing an entire reactive framework like MobX, we get most of the power of MobX with a 6 line helper function.
 
 #### credits
 

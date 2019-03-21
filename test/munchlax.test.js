@@ -323,6 +323,20 @@ describe("reactivity", function(){
       expect(calledOuter).to.equal(2);
       expect(calledInner).to.equal(2)
     })
+    it("should re-run nested computations when observed parent updates", function(){
+      const first = val("atlas");
+      const last = val("subbed");
+      let calledOuter = 0, calledInner = 0;
+      diff(h(obs(() => {
+        first(), calledOuter++;
+        comp(() => {
+          last(), calledInner++;
+        })
+      })))
+      first("jai");
+      expect(calledOuter).to.equal(2);
+      expect(calledInner).to.equal(2)
+    })
     it("should not rerender observed parents when observed child updates", function(){
       const first = val("atlas");
       const last = val("subbed");
@@ -332,6 +346,20 @@ describe("reactivity", function(){
         return h(obs(() => {
           last(), calledInner++;
         }))
+      })))
+      last("munchies");
+      expect(calledOuter).to.equal(1);
+      expect(calledInner).to.equal(2)
+    })
+    it("should not rerender observed parents when nested computation updates", function(){
+      const first = val("atlas");
+      const last = val("subbed");
+      let calledOuter = 0, calledInner = 0;
+      diff(h(obs(() => {
+        first(), calledOuter++;
+        comp(() => {
+          last(), calledInner++;
+        })
       })))
       last("munchies");
       expect(calledOuter).to.equal(1);
@@ -349,7 +377,17 @@ describe("reactivity", function(){
       })))
       expect(called).to.eql([1,2,3,4])
     })
-    it("should re-run computations in top-bottom order", function(){
+    it("should run computations in top-bottom order", function(){
+      const called = [];
+      diff(h(obs(() => {
+        called.push(1);
+        comp(() => called.push(2))
+        comp(() => called.push(3))
+        comp(() => called.push(4))
+      })))
+      expect(called).to.eql([1,2,3,4])
+    })
+    it("should re-run renders in top-bottom order", function(){
       const first = val("atlas")
       const called = [];
       diff(h(obs(() => {
@@ -359,6 +397,18 @@ describe("reactivity", function(){
           h(obs(() => called.push(3))),
           h(obs(() => called.push(4)))
         ]
+      })))
+      first("jai")
+      expect(called).to.eql([1,2,3,4,1,2,3,4])
+    })
+    it("should re-run computations in top-bottom order", function(){
+      const first = val("atlas")
+      const called = [];
+      diff(h(obs(() => {
+        first(), called.push(1);
+        comp(() => called.push(2))
+        comp(() => called.push(3))
+        comp(() => called.push(4))
       })))
       first("jai")
       expect(called).to.eql([1,2,3,4,1,2,3,4])
@@ -374,6 +424,21 @@ describe("reactivity", function(){
             first(), called.push(3);
           }))
         }))
+      })))
+      first("jai")
+      expect(called).to.eql([1,2,3,1,2,3])
+    })
+    it("should update nested computations atomically", function(){
+      const first = val("atlas");
+      const called = [];
+      diff(h(obs(() => {
+        first(), called.push(1);
+        return comp(() => {
+          first(), called.push(2);
+          return comp(() => {
+            first(), called.push(3);
+          })
+        })
       })))
       first("jai")
       expect(called).to.eql([1,2,3,1,2,3])
@@ -400,6 +465,26 @@ describe("reactivity", function(){
           calledInner++;
           precipitation()
         }))
+      })));
+      expect(calledOuter).to.equal(1)
+      expect(calledInner).to.equal(1)
+      isSunny(true);
+      expect(calledOuter).to.equal(2);
+      expect(calledInner).to.equal(1);
+      precipitation("hail");
+      expect(calledOuter).to.equal(2);
+      expect(calledInner).to.equal(1);
+    })
+    it("should dynamically depend on only the currently used reactive computations", function(){
+      const precipitation = val("rain");
+      const isSunny = val(false);
+      let calledInner = 0, calledOuter = 0;
+      diff(h(obs(() => {
+        calledOuter++;
+        isSunny() || comp(() => {
+          calledInner++;
+          precipitation()
+        })
       })));
       expect(calledOuter).to.equal(1)
       expect(calledInner).to.equal(1)
