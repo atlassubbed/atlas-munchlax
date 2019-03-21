@@ -1,7 +1,7 @@
 const { describe, it } = require("mocha")
 const { expect } = require("chai")
 const { val, comp, obs } = require("../");
-const { diff } = require("atlas-relax");
+const { diff, Frame } = require("atlas-relax");
 
 const asap = Promise.resolve().then.bind(Promise.resolve())
 const h = name => ({name});
@@ -216,6 +216,16 @@ describe("reactivity", function(){
     })
   })
   describe("reactive (observed) render functions", function(){
+    it("should inherit the name of the passed arrow function", function(){
+      const MyApp = () => {};
+      const decoratedRender = obs(MyApp);
+      expect(decoratedRender.name).to.equal("MyApp");
+    })
+    it("should inherit the name of the passed function", function(){
+      function MyApp(){};
+      const decoratedRender = obs(MyApp);
+      expect(decoratedRender.name).to.equal("MyApp");
+    })
     it("should run render with no return value", function(){
       let called = 0;
       diff(h(obs(() => {

@@ -121,6 +121,16 @@ const MyDashboard = obs(() => {
 
 Instead of importing an entire reactive framework like MobX, we get most of the power of MobX with a 6 line helper function.
 
+### `obs` has a few caveats, but `comp` solves them all:
+  
+  1. `obs` can't wrap classes (or constructors) yet: `obs(class MyApp extends Frame {...})`. I'll implement this if people start using this, or feel free to open a PR. The basic idea is to rewrite the render prototype method for the class with a wrapped method.
+
+  2. `obs` hasn't been defined to take non-render functions. This is by design. `obs` is specifically designed to decorate render functions (i.e. functional components).
+
+  3. `obs` returns a functional component. Just as you are never supposed to instantiate components directly (`const dashboard = new MyDashboardComponent()`), you are also not supposed to manually call the return function from `obs`, since it's a decorated component. Again, this is by design.
+
+  If you find yourself needing these things, then you should use `comp`, since it was designed for these use-cases.
+
 #### credits
 
 [GhostyDoesStuff](https://aminoapps.com/c/pokemon/page/user/ghostydoesstuff-tm/jlhp_fgmM8N1gMK1GebwPGp153oRKr) made the "Munchlax in Sunglasses" image.
