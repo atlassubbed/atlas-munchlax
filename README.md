@@ -6,7 +6,7 @@ Reactive variable and autorun library in 20 lines of code -- inspired by Meteor.
 
 [<img alt="Munchlax being awesome" align="right" width="200" src="https://user-images.githubusercontent.com/38592371/54497007-f192c700-48cb-11e9-99c9-f040209c362d.png">](https://pokemondb.net/pokedex/munchlax?q=use-atlas-relax)
 
-Munchlax gives you reactive variables, computed variables observers, and autoruns:
+Munchlax gives you reactive variables, computed variables, observers, and autoruns:
 
 ```jsx
 
