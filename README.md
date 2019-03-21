@@ -58,7 +58,7 @@ const App = obs(() => {
 })
 ```
 
-> If you read the source code, you might notice that this library is (relatively) trivial compared to MobX or Meteor.Tracker. That's because [Relax](https://github.com/atlassubbed/atlas-relax) is doing *all* of the heavy lifting -- we've reduced the task of state management to [*picking a pattern*](#another-pattern) we'd like to use! All of these patterns can be implemented on top of Relax's lego-like primitives. The key here is that the same engine for VDOM/graph diffing and reconcilation can easily power both UI frameworks and state management frameworks.
+> If you read the source code, you might notice that this library is (relatively) trivial compared to MobX or Meteor.Tracker. That's because [Relax](https://github.com/atlassubbed/atlas-relax) is doing *all* of the heavy lifting -- we've reduced the task of state management to [*picking a pattern*](#obs-vs-comp) we'd like to use! All of these patterns can be implemented on top of Relax's lego-like primitives. The key here is that the same engine for VDOM/graph diffing and reconcilation can easily power both UI frameworks and state management frameworks.
 
 ### concepts
 
