@@ -1,45 +1,22 @@
-const { diff } = require("atlas-relax");
+const { diff, current } = require("atlas-relax");
 
-// Reactive programming library in ~20 lines (minus comments/ws) of code on top of Relax
-
-let par;
+// Reactive programming library in ~15 lines of code on top of Relax
 
 const yes = () => true;
-
-const track = f => par && (par.sub(f), par.deps.push(f));
-
-const untrack = (f, d, deps=f.deps=f.deps||[]) => {
-  while(d = deps.pop()) f.unsub(d)
+const track = (f, p=current()) => p && p.comps && (p.sub(f), p.deps.push(f));
+const obs = render => function obs(t, f){
+  if (f.deps = f.deps || []) while(d = f.deps.pop()) f.unsub(d);
+  if (f.comps = f.comps || []) while(d = f.comps.pop()) diff(null, d);
+  return render(t, f)
 }
-
-// reactive variable
 const val = (cur, shouldUpd=yes) => {
   let pend = cur, f = diff({name: () => cur = pend});
-  return (next, tau) => (
-    next === undefined ? track(f) : shouldUpd(cur, pend=next) && f.diff(tau), cur
-  )
+  return (next, tau) => (next === undefined ? track(f) :
+    shouldUpd(cur, pend=next) && f.diff(tau), cur)
 }
-
-// reactive computation
-const comp = (render, cur, self) => {
-  const temp = {name: (t, f) => {
-    f.comps = [], untrack(par = self = f);
-    // relax auto-cleans up old comps
-    return par = void(cur = render()), f.comps;
-  }}
-  // return a getter to enable reactive computed variables
-  return par ? par.comps.push(temp) : diff(temp), () => (track(self), cur);
-}
-
-const obs = (render, value=render.name) => {
-  const obs = (t, f, d) => {
-    f.comps = f.comps || [], untrack(par = f)
-    while(d = f.comps.pop()) diff(null, d);
-    t = render(t, f), d = f.comps.length;
-    while(d--) f.comps[d] = diff(f.comps[d]);
-    return par = null, t;
-  }
-  return value && Object.defineProperty(obs, "name", {value}), obs;
+const comp = (render, cur) => {
+  const p = current(), f = diff({name: obs((t, f) => cur = render(f))});
+  return p && p.comps && p.comps.push(f), () => (track(f), cur);
 }
 
 module.exports = { val, comp, obs };

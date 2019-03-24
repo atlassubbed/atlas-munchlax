@@ -1,6 +1,6 @@
 # atlas-munchlax
 
-Reactive variable and autorun library in 20 lines of code -- inspired by Meteor.
+Reactive variable and autorun library in 15 lines of code -- inspired by Meteor.
 
 [![Travis](https://img.shields.io/travis/atlassubbed/atlas-munchlax.svg)](https://travis-ci.org/atlassubbed/atlas-munchlax)
 
@@ -93,7 +93,7 @@ npm install --save atlas-munchlax
 
 A `comp` is like MobX's `autorun` and `@computed` APIs in one function. It is similar to Meteor's `Tracker.autorun` as well.
 
-`obs` is basically the same as `comp`, except it lets you "wrap" render functions and automatically turn them into reactive autoruns. The `obs` implementation is 6 lines of code. It's so short because it's an API wrapper for something you can already do with Relax. 
+`obs` is basically the same as `comp`, except it lets you "wrap" render functions and automatically turn them into reactive autoruns. The `obs` implementation is 3 lines of code. It's so short because it's an API wrapper for something you can already do with Relax. 
 
 Relax is a state management library, but it is not opinionated. It provides the necessary primitives for you to form your own opinion. *Munchlax* is merely an opinion, and it's for the people who love Meteor and MobX. If you aren't one of those people, don't worry -- Relax makes it easy for you to use a different opinion. Hopefully you will feel at home with `val`, `comp`, and `obs`:
 
@@ -119,7 +119,7 @@ const MyDashboard = obs(() => {
 })
 ```
 
-Instead of importing an entire reactive framework like MobX, we get most of the power of MobX with a 6 line helper function.
+Instead of importing an entire reactive framework like MobX, we get most of the power of MobX with a 3 line helper function.
 
 ### `obs` has a few caveats, but `comp` solves them all:
   

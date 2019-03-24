@@ -23,12 +23,12 @@
   "author": "atlassubbed <atlassubbed@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "atlas-relax": "^1.0.1",
+    "atlas-relax": "^1.1.0",
     "chai": "^4.1.2",
     "mocha": "^5.2.0"
   },
   "peerDependencies": {
-    "atlas-relax": "^1.0.1"
+    "atlas-relax": "^1.1.0"
   },
   "homepage": "https://github.com/atlassubbed/atlas-munchlax#readme",
   "bugs": "https://github.com/atlassubbed/atlas-munchlax/issues",

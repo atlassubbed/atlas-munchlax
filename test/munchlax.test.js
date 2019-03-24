@@ -6,6 +6,11 @@ const { diff, Frame } = require("atlas-relax");
 const asap = Promise.resolve().then.bind(Promise.resolve())
 const h = name => ({name});
 
+// val shouldn't track non-comps and non-observers
+//   test render and rendered
+// comp shouldn't work in rendered
+// obs should work in rendered
+
 describe("reactivity", function(){
   describe("reactive variables", function(){
     it("should get variables with no initial value", function(){
@@ -114,7 +119,7 @@ describe("reactivity", function(){
       expect(calledOuter).to.equal(1);
       expect(calledInner).to.equal(2)
     })
-    it("should run computations in top-bottom order", function(){
+    it("should run computations in stack order", function(){
       const called = [];
       comp(() => {
         called.push(1);
@@ -122,9 +127,9 @@ describe("reactivity", function(){
         comp(() => called.push(3))
         comp(() => called.push(4))
       })
-      expect(called).to.eql([1,2,3,4])
+      expect(called).to.eql([1,4,3,2])
     })
-    it("should re-run computations in top-bottom order", function(){
+    it("should re-run computations in stack order", function(){
       const first = val("atlas")
       const called = [];
       comp(() => {
@@ -134,7 +139,7 @@ describe("reactivity", function(){
         comp(() => (called.push(4)))
       })
       first("jai")
-      expect(called).to.eql([1,2,3,4,1,2,3,4])
+      expect(called).to.eql([1,4,3,2,1,4,3,2])
     })
     it("should update nested computations atomically", function(){
       const first = val("atlas");
@@ -183,6 +188,28 @@ describe("reactivity", function(){
       expect(calledOuter).to.equal(2);
       expect(calledInner).to.equal(1);
     })
+    it("should dynamically depend on only the currently used post-order nested computations", function(){
+      const precipitation = val("rain");
+      const isSunny = val(false);
+      let calledInner = 0, calledOuter = 0;
+      comp(f => {
+        calledOuter++;
+        f.rendered = () => {
+          isSunny() || comp(() => {
+            calledInner++;
+            precipitation()
+          })
+        }
+      })
+      expect(calledOuter).to.equal(1)
+      expect(calledInner).to.equal(1)
+      isSunny(true);
+      expect(calledOuter).to.equal(2);
+      expect(calledInner).to.equal(1);
+      precipitation("hail");
+      expect(calledOuter).to.equal(2);
+      expect(calledInner).to.equal(1);
+    })
     it("should not batch reactive variable updates by default", function(){
       const first = val("atlas");
       const last = val("subbed");
@@ -216,32 +243,33 @@ describe("reactivity", function(){
     })
   })
   describe("reactive (observed) render functions", function(){
-    it("should use a custom name if supplied with an arrow function", function(){
-      const MyApp = () => {};
-      const decoratedRender = obs(MyApp, "CustomName");
-      expect(decoratedRender.name).to.equal("CustomName");
-    })
-    it("should use a custom name if supplied with a function", function(){
-      function MyApp(){};
-      const decoratedRender = obs(MyApp, "CustomName");
-      expect(decoratedRender.name).to.equal("CustomName");
-    })
-    it("should inherit the name of the passed arrow function", function(){
-      const MyApp = () => {};
-      const decoratedRender = obs(MyApp);
-      expect(decoratedRender.name).to.equal("MyApp");
-    })
-    it("should inherit the name of the passed function", function(){
-      function MyApp(){};
-      const decoratedRender = obs(MyApp);
-      expect(decoratedRender.name).to.equal("MyApp");
-    })
-    it("should use the name 'obs' if the passed arrow function is anonymous", function(){
+    // could add support for this some other time, keep it simple for now.
+    // it("should use a custom name if supplied with an arrow function", function(){
+    //   const MyApp = () => {};
+    //   const decoratedRender = obs(MyApp, "CustomName");
+    //   expect(decoratedRender.name).to.equal("CustomName");
+    // })
+    // it("should use a custom name if supplied with a function", function(){
+    //   function MyApp(){};
+    //   const decoratedRender = obs(MyApp, "CustomName");
+    //   expect(decoratedRender.name).to.equal("CustomName");
+    // })
+    // it("should inherit the name of the passed arrow function", function(){
+    //   const MyApp = () => {};
+    //   const decoratedRender = obs(MyApp);
+    //   expect(decoratedRender.name).to.equal("MyApp");
+    // })
+    // it("should inherit the name of the passed function", function(){
+    //   function MyApp(){};
+    //   const decoratedRender = obs(MyApp);
+    //   expect(decoratedRender.name).to.equal("MyApp");
+    // })
+    it("should use the name 'obs' if the passed an arrow function", function(){
       const makeAnonRender = () => () => {};
       const decoratedRender = obs(makeAnonRender());
       expect(decoratedRender.name).to.equal("obs");
     })
-    it("should use the name 'obs' if the passed function is anonymous", function(){
+    it("should use the name 'obs' if passed a regular function", function(){
       const makeAnonRender = () => function(){};
       const decoratedRender = obs(makeAnonRender());
       expect(decoratedRender.name).to.equal("obs");
@@ -407,7 +435,7 @@ describe("reactivity", function(){
       })))
       expect(called).to.eql([1,2,3,4])
     })
-    it("should run computations in top-bottom order", function(){
+    it("should run computations in stack order", function(){
       const called = [];
       diff(h(obs(() => {
         called.push(1);
@@ -415,7 +443,7 @@ describe("reactivity", function(){
         comp(() => called.push(3))
         comp(() => called.push(4))
       })))
-      expect(called).to.eql([1,2,3,4])
+      expect(called).to.eql([1,4,3,2])
     })
     it("should re-run renders in top-bottom order", function(){
       const first = val("atlas")
@@ -431,7 +459,7 @@ describe("reactivity", function(){
       first("jai")
       expect(called).to.eql([1,2,3,4,1,2,3,4])
     })
-    it("should re-run computations in top-bottom order", function(){
+    it("should re-run computations in stack order", function(){
       const first = val("atlas")
       const called = [];
       diff(h(obs(() => {
@@ -441,7 +469,7 @@ describe("reactivity", function(){
         comp(() => called.push(4))
       })))
       first("jai")
-      expect(called).to.eql([1,2,3,4,1,2,3,4])
+      expect(called).to.eql([1,4,3,2,1,4,3,2])
     })
     it("should update observed progeny atomically", function(){
       const first = val("atlas");
@@ -515,6 +543,28 @@ describe("reactivity", function(){
           calledInner++;
           precipitation()
         })
+      })));
+      expect(calledOuter).to.equal(1)
+      expect(calledInner).to.equal(1)
+      isSunny(true);
+      expect(calledOuter).to.equal(2);
+      expect(calledInner).to.equal(1);
+      precipitation("hail");
+      expect(calledOuter).to.equal(2);
+      expect(calledInner).to.equal(1);
+    })
+    it("should dynamically depend on only the currently used post-order reactive computations", function(){
+      const precipitation = val("rain");
+      const isSunny = val(false);
+      let calledInner = 0, calledOuter = 0;
+      diff(h(obs((t, f) => {
+        calledOuter++;
+        f.rendered = () => {
+          isSunny() || comp(() => {
+            calledInner++;
+            precipitation()
+          })
+        }
       })));
       expect(calledOuter).to.equal(1)
       expect(calledInner).to.equal(1)
